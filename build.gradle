@@ -2,7 +2,7 @@ buildscript {
     ext {
         springBootVersion = '3.3.7'
         username = "biswa.das2630@gmail.com"
-        password = {userPassword}
+        password = System.getenv('USER_PASSWORD') // Use environment variable for password
     }
     repositories {
         mavenCentral()
@@ -36,6 +36,7 @@ buildscript {
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "java"
 apply plugin: "idea"
+apply plugin: "maven-publish"
 
 artifactory {
     contextUrl = "https://akashtrailer.jfrog.io/artifactory"
@@ -43,7 +44,7 @@ artifactory {
         repository {
             repoKey = 'mymovie-gradle-dev-local'
             username = "biswa.das2630@gmail.com"
-            password = {userPassword}
+            password = System.getenv('USER_PASSWORD') // Use environment variable for password
             maven = true
         }
     }
@@ -51,13 +52,13 @@ artifactory {
         repository {
             repoKey = 'mymovie-gradle-dev'
             username = "biswa.das2630@gmail.com"
-            password = {userPassword}
+            password = System.getenv('USER_PASSWORD') // Use environment variable for password
             maven = true
         }
     }
 }
 
-group = 'com.example'
+group = 'com.movie'
 version = '1.0.0'
 
 repositories {
@@ -69,10 +70,29 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.3.7")
     implementation("org.projectlombok:lombok:1.18.28")
     implementation('com.fasterxml.jackson.core:jackson-databind')
-//    annotationProcessor("org.projectlombok:lombok:1.18.28")
+    // annotationProcessor("org.projectlombok:lombok:1.18.28")
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-
     implementation 'mysql:mysql-connector-java:8.0.33'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = 'com.movie'
+            artifactId = 'movie-app'
+            version = '1.0.0'
+        }
+    }
+    repositories {
+        maven {
+            url = uri("https://akashtrailer.jfrog.io/artifactory/libs-release")
+            credentials {
+                username = project.username
+                password = project.password
+            }
+        }
+    }
 }
 
 test {
