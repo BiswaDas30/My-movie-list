@@ -11,10 +11,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Entity
+@SequenceGenerator(name = "movie_seq", sequenceName = "movie_sequence", allocationSize = 1)
 public class Movie {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movie_seq")
     private Integer movieId;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)

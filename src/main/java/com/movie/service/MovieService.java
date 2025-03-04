@@ -2,11 +2,11 @@ package com.movie.service;
 
 import com.movie.model.Movie;
 import com.movie.repository.MovieRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MovieService {
@@ -16,10 +16,6 @@ public class MovieService {
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
-    }
-
-    public Optional<Movie> getMovieById(String movieId) {
-        return movieRepository.findById(movieId);
     }
 
     public Movie saveMovie(Movie movie) {
@@ -36,5 +32,20 @@ public class MovieService {
 
     public void deleteAllMovies() {
         movieRepository.deleteAll();
+    }
+
+    @Transactional
+    public void resetMoviesTable() {
+        movieRepository.truncateMovieTable();
+    }
+
+    public List<Movie> getMovieByAdvancedSearch(String movieName, String movieType, String movieLanguage, String movieRating, int movieYear) {
+        return movieRepository.findByAdvancedSearch(
+                movieName.isEmpty() ? null : movieName,
+                movieType.isEmpty() ? null : movieType,
+                movieLanguage.isEmpty() ? null : movieLanguage,
+                movieRating.isEmpty() ? null : movieRating,
+                movieYear == 0 ? null : movieYear
+        );
     }
 }

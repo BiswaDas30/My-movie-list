@@ -2,12 +2,9 @@ package com.movie.controller;
 
 import com.movie.model.Movie;
 import com.movie.service.MovieService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/movies")
@@ -17,22 +14,10 @@ public class MovieController {
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
     }
-    @GetMapping("/")
-    public String home() {
-        return "Welcome to Movie Application";
-    }
 
     @GetMapping("/movieList")
     public List<Movie> getAllMovieDetails() {
         return movieService.getAllMovies();
-    }
-
-    @GetMapping("/movieById/{movieId}")
-    public Movie getMovieById(@PathVariable("movieId") int movieId) {
-        Optional<Movie> movie = movieService.getMovieById(String.valueOf(movieId));
-
-        return movie.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build()).getBody();
     }
 
     @PostMapping(value = {"/save"})
@@ -52,5 +37,15 @@ public class MovieController {
     @PostMapping("/deleteAll")
     public void deleteAllMovies() {
         movieService.deleteAllMovies();
+        movieService.resetMoviesTable();
+    }
+
+    @GetMapping("/advancedSearch")
+    public List<Movie> getMovieByAdvancedSearch(@RequestParam("name") String movieName,
+                                         @RequestParam("type") String movieType,
+                                         @RequestParam("language") String movieLanguage,
+                                         @RequestParam("rating") String movieRating,
+                                         @RequestParam("year") int movieYear) {
+        return movieService.getMovieByAdvancedSearch(movieName, movieType, movieLanguage, movieRating, movieYear);
     }
 }
